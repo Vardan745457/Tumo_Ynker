@@ -9,6 +9,20 @@ router.get('/students/:email', passport.authenticate('basic', { session: false }
   function(req, res, next) {
     // TODO: add api handler to check if email/password exists
     // TODO: Response back with user data
+    const students = {
+      email: req.params.email,
+    }
+
+    if (students.email) {
+      db.getClient().collection("students").findOne({email: students.email}, function (err, result) {
+        if (err) console.log(err);
+        
+        res.status(200).send(result);
+     });
+    }
+    res.status(500).send("Error");
+
+    next();
 });
 
 /* Create a student account */
@@ -44,4 +58,4 @@ router.put('/students/:email', passport.authenticate('basic', { session: false }
     // TODO: EXTRA CREDIT update student record
 });
 
-module.exports = router;
+module.exports = router ;
