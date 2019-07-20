@@ -16,7 +16,7 @@ router.get('/students/:email', passport.authenticate('basic', { session: false }
       }
       console.log()
       res.send(result);
-      next();
+      // next();
     });
 });
 
@@ -51,6 +51,15 @@ router.post('/students', function(req, res, next) {
 router.put('/students/:email', passport.authenticate('basic', { session: false }),
   function(req, res, next) {
     // TODO: EXTRA CREDIT update student record
+
+    db.getClient.collection("students").findOne({email: req.params.email}, function(err, result ) {
+        if (err) {
+          console.log(err)
+          res.status(400).send(err.massage);
+        }
+
+        // dg.getClient.collection("students").
+    });
 });
 
 module.exports = router ;
