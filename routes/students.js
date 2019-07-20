@@ -57,8 +57,8 @@ router.put('/students/:email', passport.authenticate('basic', { session: false }
           console.log(err)
           res.status(400).send(err.massage);
         }
-
-        // dg.getClient.collection("students").
+        console.log(result);
+        // dg.getClient.collection("students").updateOne()
     });
 });
 
