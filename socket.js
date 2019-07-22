@@ -13,6 +13,45 @@ function usersNamespace(io) {
   const users = io.of('/users');
   users.on('connection', socket => {
     // TODO: add listener for starting chat
+
+    socket.on('loggin', user => {
+      socket.join(user.email);
+
+      db.getClient().collection("students").findOneAnUpdate(
+        {email: user.email},
+        {$set: {'loggedIn': true }},
+        {returnOriginal: false },
+        (err, results) => {
+          if (err) {
+            socket.emit("list error", err);
+          }else if (results.value == null) {
+              socket.emait("list error", "bla bla");
+          }else {
+            user.emit("logged in", results.value);
+          }
+        });
+
+
+        socket.on('disconnect', user => {
+          socket.leave(user.email);
+
+          db.getClient().collection("students").findOneAnUpdate(
+            {email: user.email},
+            {$set: {'loggedIn': false }},
+            {returnOriginal: false },
+            (err, results) => {
+              if (err) {
+                socket.emit("list error", err);
+              }else if (results.value == null) {
+                  socket.emait("list error", "bla bla");
+              }else {
+                user.emit("logged in", results.value);
+              }
+            });
+
+       });
+
+    });
     
     // TODO: add listener to chat message
 
