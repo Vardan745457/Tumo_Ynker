@@ -14,10 +14,10 @@ function usersNamespace(io) {
   users.on('connection', socket => {
     // TODO: add listener for starting chat
 
-    socket.on('loggin', user => {
+    socket.on('login', user => {
       socket.join(user.email);
 
-      db.getClient().collection("students").findOneAnUpdate(
+      db.getClient().collection("students").findOneAndUpdate(
         {email: user.email},
         {$set: {'loggedIn': true }},
         {returnOriginal: false },
@@ -27,7 +27,8 @@ function usersNamespace(io) {
           }else if (results.value == null) {
               socket.emait("list error", "bla bla");
           }else {
-            user.emit("logged in", results.value);
+            socket.emit("logged in", results.value);
+            console.log(results);
           }
         });
 
@@ -35,7 +36,7 @@ function usersNamespace(io) {
         socket.on('disconnect', user => {
           socket.leave(user.email);
 
-          db.getClient().collection("students").findOneAnUpdate(
+          db.getClient().collection("students").findOneAndUpdate(
             {email: user.email},
             {$set: {'loggedIn': false }},
             {returnOriginal: false },
@@ -43,13 +44,32 @@ function usersNamespace(io) {
               if (err) {
                 socket.emit("list error", err);
               }else if (results.value == null) {
-                  socket.emait("list error", "bla bla");
+                socket.emit("list error", "bla bla");
               }else {
                 user.emit("logged in", results.value);
               }
             });
 
        });
+
+       socket.on('log out', user => {
+        socket.leave(user.email);
+
+        db.getClient().collection("students").findOneAndUpdate(
+          {email: user.email},
+          {$set: {'loggedIn': false }},
+          {returnOriginal: false },
+          (err, results) => {
+            if (err) {
+              socket.emit("list error", err);
+            }else if (results.value == null) {
+              socket.emit("list error", "bla bla");
+            }else {
+              user.emit("loged in", results.value);
+            }
+          });
+
+     });
 
     });
     
